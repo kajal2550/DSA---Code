@@ -1,16 +1,36 @@
- class Solution {
-    public int numSteps(String s) {
-    int st = 0;
-    int c = 0;
-    for (int i = s.length() - 1; i > 0; i--) {
-        int n = s.charAt(i) - '0';
-        if (n + c == 1) {
-            st+= 2;
-            c= 1;
-        } else {
-            st+= 1;
+/*
+ * Problem: Concatenation of Consecutive Binary Numbers
+ *
+ * Given an integer n, return the decimal value of the binary string
+ * formed by concatenating the binary representations of 1 to n.
+ *
+ * Approach:
+ * - Iterate from 1 to n.
+ * - Track number of bits required to represent current number.
+ * - Whenever we encounter a power of 2, bit length increases by 1.
+ * - Left shift the previous result to make space for current number.
+ * - Append current number using bitwise OR.
+ * - Take modulo (10^9 + 7) at every step to avoid overflow.
+ *
+ * Time Complexity: O(n)
+ * Space Complexity: O(1)
+ */
+
+class Solution {
+    public int concatenatedBinary(int n) {
+        final int MOD = 1_000_000_007;
+        long res = 0;
+        int bits = 0;
+
+        for (int i = 1; i <= n; i++) {
+            // Check if i is power of 2
+            if ((i & (i - 1)) == 0) {
+                bits++;
+            }
+
+            res = ((res << bits) | i) % MOD;
         }
-    }
-    return st+c;
+
+        return (int) res;
     }
 }
