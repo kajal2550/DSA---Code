@@ -1,4 +1,4 @@
-/*
+//*
  * Problem: Concatenation of Consecutive Binary Numbers
  *
  * Given an integer n, return the decimal value of the binary string
@@ -14,7 +14,7 @@
  *
  * Time Complexity: O(n)
  * Space Complexity: O(1)
- */
+ *//
 
 class Solution {
     public int concatenatedBinary(int n) {
