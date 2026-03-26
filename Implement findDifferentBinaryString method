@@ -6,4 +6,6 @@ class Solution {
             ans[i] = nums[i].charAt(i) == '0' ? '1' : '0';
         return new String(ans);
     }
-}5
+}
+
+//------//
