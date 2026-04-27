@@ -1,0 +1,97 @@
+#include <vector>
+#include <queue>
+#include <utility> // For std::pair
+
+class Solution {
+public:
+    bool hasValidPath(std::vector<std::vector<int>>& grid) {
+        bool has_port[7][4]; // street_type 1-6, port_index 0-3 (Up, Down, Left, Right)
+        
+        // Initialize all connections to false
+        for (int i = 0; i < 7; ++i) {
+            for (int j = 0; j < 4; ++j) {
+                has_port[i][j] = false;
+            }
+        }
+
+        // Define open ports for each street type
+        // Port 0: Up, 1: Down, 2: Left, 3: Right
+
+        // Street type 1: Connects Left, Right (ports 2, 3)
+        has_port[1][2] = true; has_port[1][3] = true;
+        // Street type 2: Connects Up, Down (ports 0, 1)
+        has_port[2][0] = true; has_port[2][1] = true;
+        // Street type 3: Connects Left, Down (ports 2, 1)
+        has_port[3][2] = true; has_port[3][1] = true;
+        // Street type 4: Connects Right, Down (ports 3, 1)
+        has_port[4][3] = true; has_port[4][1] = true;
+        // Street type 5: Connects Left, Up (ports 2, 0)
+        has_port[5][2] = true; has_port[5][0] = true;
+        // Street type 6: Connects Right, Up (ports 3, 0)
+        has_port[6][3] = true; has_port[6][0] = true;
+
+        int m = grid.size();
+        int n = grid[0].size();
+
+        std::queue<std::pair<int, int>> q;
+        std::vector<std::vector<bool>> visited(m, std::vector<bool>(n, false));
+
+        // Direction vectors: Up, Down, Left, Right (corresponds to dr/dc index 0, 1, 2, 3)
+        const int dr[4] = {-1, 1, 0, 0};
+        const int dc[4] = {0, 0, -1, 1};
+
+        // Mapping from direction index to port index for the current cell
+        // If moving Up (dr[0], dc[0]), current cell uses its Up port (0)
+        const int curr_cell_outgoing_port[4] = {0, 1, 2, 3};
+
+        // Mapping from direction index to port index for the neighbor cell (opposite direction)
+        // If current cell moves Up (dr[0], dc[0]), neighbor receives from Down (its port 1)
+        const int neighbor_cell_incoming_port[4] = {1, 0, 3, 2};
+
+        q.push({0, 0});
+        visited[0][0] = true;
+
+        while (!q.empty()) {
+            std::pair<int, int> curr = q.front();
+            q.pop();
+            int r = curr.first;
+            int c = curr.second;
+
+            // If we reached the target cell
+            if (r == m - 1 && c == n - 1) {
+                return true; 
+            }
+
+            int current_street_type = grid[r][c];
+
+            // Explore 4 possible directions (Up, Down, Left, Right)
+            for (int i = 0; i < 4; ++i) {
+                int nr = r + dr[i];
+                int nc = c + dc[i];
+
+                // Check boundary conditions
+                if (nr < 0 || nr >= m || nc < 0 || nc >= n) {
+                    continue;
+                }
+                // Check if the neighbor cell has already been visited
+                if (visited[nr][nc]) {
+                    continue;
+                }
+
+                int neighbor_street_type = grid[nr][nc];
+                int outgoing_port = curr_cell_outgoing_port[i];
+                int incoming_port = neighbor_cell_incoming_port[i];
+
+                // Check if current cell has an open port in the outgoing direction
+                // AND if the neighbor cell has an open port in the corresponding incoming direction
+                if (has_port[current_street_type][outgoing_port] && has_port[neighbor_street_type][incoming_port]) {
+                    visited[nr][nc] = true;
+                    q.push({nr, nc});
+                }
+            }
+        }
+
+        // If the queue becomes empty and the destination was not reached
+        return false;
+    }
+};
