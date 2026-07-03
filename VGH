@@ -1,0 +1,5 @@
+SELECT ename,
+       (SELECT dname
+        FROM dept
+        WHERE dept.deptno = emp.deptno) AS dname
+FROM emp;
